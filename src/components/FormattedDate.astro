@@ -1,17 +1,15 @@
 ---
 interface Props {
-	date: Date;
+  date: Date;
+  compact?: boolean;
 }
 
-const { date } = Astro.props;
----
+const { date, compact = false } = Astro.props;
 
-<time datetime={date.toISOString()}>
-	{
-		date.toLocaleDateString('en-us', {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric',
-		})
-	}
-</time>
+const yyyy = date.getUTCFullYear();
+const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
+const dd = String(date.getUTCDate()).padStart(2, '0');
+
+const formatted = compact ? `${mm}·${dd}` : `${yyyy}·${mm}·${dd}`;
+---
+<time datetime={date.toISOString()}>{formatted}</time>

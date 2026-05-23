@@ -1,7 +1,7 @@
 ---
 title: 'Em dev funciona não significa nada'
 description: 'Quatro bugs descobertos no primeiro deploy real. Todos os caminhos que falharam tinham substituto em dev que escondia a forma real do código em produção.'
-pubDate: 'May 22 2026'
+pubDate: '2026-05-22'
 ---
 
 Hoje passei a tarde tentando entender por que um sistema que tinha CI verde, deploy verde, login OAuth funcionando e healthchecks felizes não conseguia salvar um único arquivo num bucket. Resolvi escrever isso porque acho que a coisa mais útil que aprendi não foi nenhum dos quatro bugs que descobri ao longo do dia, mas a forma como eles, juntos, formam uma evidência irrefutável de uma coisa que a gente fala muito e leva pouco a sério: **"funciona em dev" é um dado quase inútil.**
