@@ -1,0 +1,153 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import FormattedDate from './FormattedDate.astro';
+import ReadingTime from './ReadingTime.astro';
+
+interface Props {
+  posts: CollectionEntry<'blog'>[];
+}
+
+const { posts } = Astro.props;
+
+// Ordena do mais recente pro mais antigo
+const sorted = [...posts].sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+const [featured, ...rest] = sorted;
+
+// Agrupa o resto por ano
+const grouped = new Map<number, typeof rest>();
+for (const post of rest) {
+  const year = post.data.pubDate.getUTCFullYear();
+  if (!grouped.has(year)) grouped.set(year, []);
+  grouped.get(year)!.push(post);
+}
+const years = Array.from(grouped.keys()).sort((a, b) => b - a);
+---
+
+{
+  featured && (
+    <article class="featured">
+      <div class="featured-meta">
+        <span class="label">ÚLTIMO POST</span>
+        <span class="dot">·</span>
+        <ReadingTime body={featured.body ?? ''} />
+      </div>
+      <h2 class="featured-title">
+        <a href={`/blog/${featured.id}/`}>{featured.data.title}</a>
+      </h2>
+      <p class="featured-desc">{featured.data.description}</p>
+      <div class="featured-date">
+        <FormattedDate date={featured.data.pubDate} />
+      </div>
+    </article>
+  )
+}
+
+{
+  years.length > 0 && (
+    <section class="archive">
+      {years.map((year) => (
+        <div class="year-group">
+          <h3 class="year-heading">{year} ────────</h3>
+          <ul class="post-list">
+            {grouped.get(year)!.map((post) => (
+              <li>
+                <a href={`/blog/${post.id}/`} class="post-row">
+                  <FormattedDate date={post.data.pubDate} compact />
+                  <span class="post-title">{post.data.title}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </section>
+  )
+}
+
+<style>
+  .featured {
+    border-left: 3px solid var(--accent);
+    padding: 1rem 0 1rem 1.25rem;
+    margin: 2rem 0 3rem 0;
+  }
+  .featured-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .label {
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+  .dot {
+    color: var(--text-faint);
+  }
+  .featured-title {
+    margin: 0.25rem 0 0.5rem 0;
+    font-size: 1.5rem;
+  }
+  .featured-title a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  .featured-title a:hover {
+    color: var(--accent);
+    background: transparent;
+  }
+  .featured-desc {
+    color: var(--text-muted);
+    margin: 0 0 0.5rem 0;
+  }
+  .featured-date {
+    color: var(--text-faint);
+    font-size: 0.85rem;
+  }
+  .archive {
+    margin-top: 2rem;
+  }
+  .year-heading {
+    font-size: 0.8rem;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+    font-weight: 500;
+    margin: 2rem 0 0.75rem 0;
+  }
+  .post-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .post-row {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed var(--border-faint);
+    text-decoration: none;
+    color: var(--text);
+  }
+  .post-row time {
+    color: var(--text-faint);
+    font-size: 0.85rem;
+    min-width: 3.5rem;
+  }
+  .post-row:hover {
+    background: transparent;
+  }
+  .post-row:hover .post-title {
+    color: var(--accent);
+  }
+  .post-title {
+    flex: 1;
+  }
+  @media (max-width: 720px) {
+    .featured-title { font-size: 1.25rem; }
+    .post-row { gap: 0.65rem; }
+  }
+</style>
