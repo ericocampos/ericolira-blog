@@ -22,6 +22,8 @@
     "sharp": "^0.34.3"
   },
   "devDependencies": {
+    "playwright": "^1.60.0",
+    "rehype-mermaid": "^3.0.0",
     "wrangler": "^4.94.0"
   },
   "overrides": {

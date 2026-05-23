@@ -3,6 +3,7 @@
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
+import rehypeMermaid from 'rehype-mermaid';
 
 import cloudflare from '@astrojs/cloudflare';
 
@@ -12,12 +13,34 @@ export default defineConfig({
   integrations: [mdx(), sitemap()],
 
   markdown: {
+    syntaxHighlight: {
+      type: 'shiki',
+      excludeLangs: ['mermaid', 'math'],
+    },
     shikiConfig: {
       themes: {
         light: 'github-light',
         dark: 'github-dark-dimmed',
       },
     },
+    rehypePlugins: [
+      [rehypeMermaid, {
+        strategy: 'inline-svg',
+        mermaidConfig: {
+          theme: 'base',
+          themeVariables: {
+            fontFamily: 'IBM Plex Mono, ui-monospace, monospace',
+            fontSize: '14px',
+            primaryColor: '#f0f0ec',
+            primaryTextColor: '#1a1a1a',
+            primaryBorderColor: '#888888',
+            lineColor: '#888888',
+            secondaryColor: '#fafafa',
+            tertiaryColor: '#fafafa',
+          },
+        },
+      }],
+    ],
   },
 
   fonts: [
