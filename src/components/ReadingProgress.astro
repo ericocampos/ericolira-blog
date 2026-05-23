@@ -1,0 +1,61 @@
+---
+---
+<div
+  class="reading-progress"
+  role="progressbar"
+  aria-label="Progresso de leitura"
+  aria-valuemin="0"
+  aria-valuemax="100"
+  aria-valuenow="0"
+  data-reading-progress
+>
+  <div class="reading-progress-bar" data-reading-progress-bar></div>
+</div>
+
+<style>
+  .reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: transparent;
+    z-index: 100;
+    pointer-events: none;
+  }
+  .reading-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width 80ms linear;
+  }
+</style>
+
+<script is:inline>
+  (function() {
+    var wrapper = document.querySelector('[data-reading-progress]');
+    var bar = document.querySelector('[data-reading-progress-bar]');
+    if (!wrapper || !bar) return;
+
+    var article = document.querySelector('article');
+    if (!article) return;
+
+    function update() {
+      var rect = article.getBoundingClientRect();
+      var total = article.offsetHeight - window.innerHeight;
+      if (total <= 0) {
+        bar.style.width = '100%';
+        wrapper.setAttribute('aria-valuenow', '100');
+        return;
+      }
+      var scrolled = Math.max(0, -rect.top);
+      var pct = Math.min(100, Math.max(0, Math.round((scrolled / total) * 100)));
+      bar.style.width = pct + '%';
+      wrapper.setAttribute('aria-valuenow', String(pct));
+    }
+
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+  })();
+</script>
