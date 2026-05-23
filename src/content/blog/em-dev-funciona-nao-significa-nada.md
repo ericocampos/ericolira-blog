@@ -12,6 +12,24 @@ A sessão anterior tinha sido o "deploy de go-live". HTTPS subiu, OAuth subiu, e
 
 ## Bug 1: o endpoint que apontava pro lugar errado
 
+```mermaid
+flowchart LR
+    subgraph esperado
+        direction LR
+        A1[App ASP.NET] -.-> S1["AWS SDK<br/>ServiceURL=minio:9000"] -.-> M["MinIO interno ✓"]
+    end
+    subgraph real
+        direction LR
+        A2[App ASP.NET] ==> S2["AWS SDK<br/>RegionEndpoint sobrescreve<br/>ServiceURL silenciosamente"] ==> AWS["AWS S3 público"] ==> E["InvalidAccessKeyId ✗"]
+    end
+
+    linkStyle 0 stroke:#888888,stroke-dasharray:5 5
+    linkStyle 1 stroke:#888888,stroke-dasharray:5 5
+    linkStyle 2 stroke:#cc6633,stroke-width:2px
+    linkStyle 3 stroke:#cc6633,stroke-width:2px
+    linkStyle 4 stroke:#cc6633,stroke-width:2px
+```
+
 O primeiro sintoma era específico e enganoso: o SDK oficial da AWS, configurado para falar com o storage interno, devolvia uma mensagem de erro **idêntica** à que o S3 da AWS real retorna quando você passa uma chave inválida.
 
 Stack trace acusava `InvalidAccessKeyId`. Eu tinha acabado de configurar a chave dedicada do storage local. Confirmei três vezes que a chave existia, que a policy estava attached, que o CLI oficial do storage funcionava com as mesmas variáveis de ambiente. Mesmo erro. Para piorar, o trace do servidor de storage não capturava nenhum `PutObject` chegando. O request simplesmente não aparecia lá dentro.
