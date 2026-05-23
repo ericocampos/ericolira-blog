@@ -224,7 +224,17 @@ li {
   }
 }
 
-/* Mermaid diagrams: tema dark sincronizado + scroll horizontal mobile */
+/* Mermaid diagrams: render client-side em <pre class="mermaid">, sem code-block wrapper */
+pre.mermaid {
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: center;
+}
+pre.mermaid:not([data-processed="true"]) {
+  visibility: hidden;
+  min-height: 200px;
+}
 svg.flowchart {
   max-width: 100%;
   height: auto;
