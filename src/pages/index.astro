@@ -1,29 +1,35 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import PostList from '../components/PostList.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+const posts = await getCollection('blog');
 ---
 
 <!doctype html>
 <html lang="pt-BR">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>Olá.</h1>
-			<p>
-				Sou Erico Lira. Escrevo aqui sobre o que aprendo construindo software:
-				bugs que custam horas, decisões que envelhecem mal, e tudo que sai
-				diferente do plano. A maior parte do que escrevo vem do dia a dia de
-				construir um SaaS sozinho.
-			</p>
-			<p>
-				A lista de textos está em <a href="/blog">/blog</a>.
-			</p>
-		</main>
-		<Footer />
-	</body>
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <p class="intro">
+        Notas sobre construir software e um SaaS solo. Bugs que custam horas, decisões que envelhecem mal, e tudo que sai diferente do plano.
+      </p>
+      <PostList posts={posts} />
+    </main>
+    <Footer />
+  </body>
 </html>
+
+<style>
+  .intro {
+    color: var(--text-muted);
+    margin: 2rem 0 0 0;
+    font-size: 1rem;
+  }
+</style>
