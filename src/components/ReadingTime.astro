@@ -1,0 +1,20 @@
+---
+import { readingTimeMinutes } from '../utils/reading-time';
+
+interface Props {
+  body: string;
+}
+
+const { body } = Astro.props;
+const minutes = readingTimeMinutes(body);
+---
+<span class="reading-time">{minutes} MIN</span>
+
+<style>
+  .reading-time {
+    font-family: var(--font-body);
+    color: var(--text-faint);
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+  }
+</style>
