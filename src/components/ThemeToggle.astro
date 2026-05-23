@@ -1,0 +1,55 @@
+---
+---
+<button
+  type="button"
+  class="theme-toggle"
+  data-theme-toggle
+  aria-label="Alternar tema"
+>
+  <span data-theme-label>theme</span>
+</button>
+
+<style>
+  .theme-toggle {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    line-height: 1.2;
+  }
+  .theme-toggle:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .theme-toggle[aria-pressed="true"] {
+    color: var(--accent);
+  }
+</style>
+
+<script is:inline>
+  (function() {
+    var btn = document.querySelector('[data-theme-toggle]');
+    if (!btn) return;
+    var label = btn.querySelector('[data-theme-label]');
+
+    function render(theme) {
+      label.textContent = theme === 'dark' ? '[ dark ]' : '[ light ]';
+      btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+      btn.setAttribute('aria-label', theme === 'dark' ? 'Alternar para tema claro' : 'Alternar para tema escuro');
+    }
+
+    var current = document.documentElement.getAttribute('data-theme') || 'light';
+    render(current);
+
+    btn.addEventListener('click', function() {
+      var next = (document.documentElement.getAttribute('data-theme') === 'dark') ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+      render(next);
+    });
+  })();
+</script>
