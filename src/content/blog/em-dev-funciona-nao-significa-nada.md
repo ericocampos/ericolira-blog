@@ -114,6 +114,34 @@ Fix manual no arquivo, recreate do container, hard refresh no browser, upload, p
 
 ## Bug 4: o efêmero que ninguém viu
 
+```mermaid
+flowchart LR
+    subgraph esperado
+        direction LR
+        B1[Browser cookie] -.-> A1[App container] -.-> K1["DataProtection keys<br/>volume persistente"] -.-> OK["Token válido ✓"]
+    end
+    subgraph "real — antes do fix"
+        direction LR
+        B2[Browser cookie] ==> A2[App container] ==> K2["Keys em filesystem<br/>efêmero do container"] ==> R[docker recreate destrói] ==> X1["Token vira lixo<br/>antiforgery 500 ✗"]
+    end
+    subgraph "real — depois do fix tentado"
+        direction LR
+        B3[Browser cookie] ==> A3[App container] ==> V["Volume montado<br/>permissão errada"] ==> F["Framework falha ao gravar<br/>fallback efêmero silencioso"] ==> X2["Mesma quebra<br/>agora invisível ✗"]
+    end
+
+    linkStyle 0 stroke:#888888,stroke-dasharray:5 5
+    linkStyle 1 stroke:#888888,stroke-dasharray:5 5
+    linkStyle 2 stroke:#888888,stroke-dasharray:5 5
+    linkStyle 3 stroke:#cc6633,stroke-width:2px
+    linkStyle 4 stroke:#cc6633,stroke-width:2px
+    linkStyle 5 stroke:#cc6633,stroke-width:2px
+    linkStyle 6 stroke:#cc6633,stroke-width:2px
+    linkStyle 7 stroke:#cc6633,stroke-width:2px
+    linkStyle 8 stroke:#cc6633,stroke-width:2px
+    linkStyle 9 stroke:#cc6633,stroke-width:2px
+    linkStyle 10 stroke:#cc6633,stroke-width:2px
+```
+
 Em paralelo, eu tinha notado: **toda vez** que eu recriava o container do app, qualquer aba que o navegador tinha aberta antes do recreate quebrava. POST devolvia 500. Stack trace acusava antiforgery token inválido.
 
 O motivo era que o ASP.NET, configurado no default, persiste as chaves de DataProtection (que assinam o antiforgery token, os cookies, etc.) num diretório dentro do container. Esse diretório não tinha volume montado. Toda recreate descartava as chaves. Toda recreate transformava todos os tokens anteriores em lixo criptográfico.
