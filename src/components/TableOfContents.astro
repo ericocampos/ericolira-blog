@@ -1,0 +1,148 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+
+// Só h2 por enquanto (h3+ pode entrar depois)
+const items = headings.filter((h) => h.depth === 2);
+---
+
+{
+  items.length > 0 && (
+    <>
+      {/* Desktop sticky */}
+      <aside class="toc toc-desktop" aria-label="Sumário do post">
+        <p class="toc-title">NESTE POST</p>
+        <ol>
+          {items.map((h) => (
+            <li>
+              <a href={`#${h.slug}`} data-toc-link data-slug={h.slug}>
+                {h.text}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </aside>
+
+      {/* Mobile collapse */}
+      <details class="toc toc-mobile">
+        <summary>NESTE POST ({items.length})</summary>
+        <ol>
+          {items.map((h) => (
+            <li>
+              <a href={`#${h.slug}`}>{h.text}</a>
+            </li>
+          ))}
+        </ol>
+      </details>
+    </>
+  )
+}
+
+<style>
+  .toc-title {
+    font-size: 0.75rem;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+    font-weight: 500;
+    margin: 0 0 0.75rem 0;
+  }
+  .toc ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .toc li {
+    margin: 0.4rem 0;
+    line-height: 1.35;
+  }
+  .toc a {
+    display: block;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    padding: 2px 0 2px 10px;
+    border-left: 2px solid transparent;
+  }
+  .toc a:hover {
+    color: var(--accent);
+    background: transparent;
+  }
+  .toc a[data-active="true"] {
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+
+  .toc-desktop {
+    display: none;
+  }
+  .toc-mobile {
+    margin: 1rem 0 2rem 0;
+    border: 1px solid var(--border-faint);
+    border-radius: 2px;
+    padding: 0.5rem 0.75rem;
+  }
+  .toc-mobile summary {
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+  .toc-mobile summary:hover {
+    color: var(--accent);
+  }
+
+  @media (min-width: 960px) {
+    .toc-desktop {
+      display: block;
+      position: sticky;
+      top: 2rem;
+      align-self: start;
+    }
+    .toc-mobile {
+      display: none;
+    }
+  }
+</style>
+
+<script is:inline>
+  (function() {
+    var links = document.querySelectorAll('[data-toc-link]');
+    if (!links.length) return;
+
+    var slugToLink = {};
+    links.forEach(function(l) { slugToLink[l.dataset.slug] = l; });
+
+    var headings = document.querySelectorAll('article h2[id]');
+    if (!headings.length) return;
+
+    var active = null;
+    function setActive(slug) {
+      if (active === slug) return;
+      links.forEach(function(l) { l.removeAttribute('data-active'); });
+      var l = slugToLink[slug];
+      if (l) {
+        l.setAttribute('data-active', 'true');
+        active = slug;
+      }
+    }
+
+    var observer = new IntersectionObserver(function(entries) {
+      // Pega o heading mais perto do topo que está visível.
+      var visible = entries.filter(function(e) { return e.isIntersecting; });
+      if (visible.length === 0) return;
+      visible.sort(function(a, b) { return a.target.offsetTop - b.target.offsetTop; });
+      setActive(visible[0].target.id);
+    }, {
+      rootMargin: '-20% 0px -70% 0px',
+      threshold: 0,
+    });
+
+    headings.forEach(function(h) { observer.observe(h); });
+  })();
+</script>
