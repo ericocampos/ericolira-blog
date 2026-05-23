@@ -44,6 +44,25 @@ O fix foi cirúrgico: quando `ServiceURL` está preenchido, não setar `RegionEn
 
 ## Bug 2: o fix que destravou o próximo bug
 
+```mermaid
+flowchart LR
+    subgraph esperado
+        direction LR
+        A1[App ASP.NET] -.-> S1["AWS SDK<br/>DisablePayloadSigning=true"] -.-> M["MinIO HTTP"] -.-> OK["200 ✓"]
+    end
+    subgraph real
+        direction LR
+        A2[App ASP.NET] ==> S2["AWS SDK"] ==> V["Validação interna<br/>PayloadSigning OFF + HTTP"] ==> X["reject<br/>request nunca sai ✗"]
+    end
+
+    linkStyle 0 stroke:#888888,stroke-dasharray:5 5
+    linkStyle 1 stroke:#888888,stroke-dasharray:5 5
+    linkStyle 2 stroke:#888888,stroke-dasharray:5 5
+    linkStyle 3 stroke:#cc6633,stroke-width:2px
+    linkStyle 4 stroke:#cc6633,stroke-width:2px
+    linkStyle 5 stroke:#cc6633,stroke-width:2px
+```
+
 Tentei o upload de novo. Erro novo:
 
 ```
