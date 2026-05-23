@@ -79,6 +79,25 @@ Removi a flag. O fix foi de uma linha. PR, CI verde, merge, deploy. Tentei o upl
 
 ## Bug 3: o gerenciador de senha que sabotou
 
+```mermaid
+flowchart LR
+    subgraph esperado
+        direction LR
+        PM1["Password manager<br/>chave limpa"] -.-> EV1["Env var"] -.-> A1[App ASP.NET] -.-> L1["LLM externo<br/>200 ✓"]
+    end
+    subgraph real
+        direction LR
+        PM2["Password manager<br/>chave + lixo invisível<br/>(espaço/newline)"] ==> EV2["Env var<br/>lixo preservado"] ==> A2[App ASP.NET] ==> L2["LLM externo<br/>API key not valid ✗"]
+    end
+
+    linkStyle 0 stroke:#888888,stroke-dasharray:5 5
+    linkStyle 1 stroke:#888888,stroke-dasharray:5 5
+    linkStyle 2 stroke:#888888,stroke-dasharray:5 5
+    linkStyle 3 stroke:#cc6633,stroke-width:2px
+    linkStyle 4 stroke:#cc6633,stroke-width:2px
+    linkStyle 5 stroke:#cc6633,stroke-width:2px
+```
+
 ```
 API key not valid. Please pass a valid API key.
 ```
