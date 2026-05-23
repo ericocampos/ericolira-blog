@@ -224,6 +224,55 @@ li {
   }
 }
 
+/* Mermaid diagrams: tema dark sincronizado + scroll horizontal mobile */
+svg.flowchart {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 640px) {
+  svg.flowchart {
+    max-width: none;
+  }
+  pre:has(svg.flowchart),
+  p:has(> svg.flowchart) {
+    overflow-x: auto;
+  }
+}
+
+[data-theme="dark"] svg.flowchart .node rect,
+[data-theme="dark"] svg.flowchart .node polygon,
+[data-theme="dark"] svg.flowchart .node circle,
+[data-theme="dark"] svg.flowchart .cluster rect {
+  fill: var(--bg-elevated) !important;
+  stroke: var(--border) !important;
+}
+
+[data-theme="dark"] svg.flowchart .nodeLabel,
+[data-theme="dark"] svg.flowchart .cluster-label,
+[data-theme="dark"] svg.flowchart .cluster-label foreignObject div,
+[data-theme="dark"] svg.flowchart text {
+  fill: var(--text) !important;
+  color: var(--text) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) svg.flowchart .node rect,
+  :root:not([data-theme="light"]) svg.flowchart .node polygon,
+  :root:not([data-theme="light"]) svg.flowchart .node circle,
+  :root:not([data-theme="light"]) svg.flowchart .cluster rect {
+    fill: var(--bg-elevated) !important;
+    stroke: var(--border) !important;
+  }
+  :root:not([data-theme="light"]) svg.flowchart .nodeLabel,
+  :root:not([data-theme="light"]) svg.flowchart .cluster-label,
+  :root:not([data-theme="light"]) svg.flowchart .cluster-label foreignObject div,
+  :root:not([data-theme="light"]) svg.flowchart text {
+    fill: var(--text) !important;
+    color: var(--text) !important;
+  }
+}
+
 @media (max-width: 720px) {
   body { font-size: 16px; }
   main { padding: 1.5rem var(--content-padding); }
