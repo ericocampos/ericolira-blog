@@ -7,6 +7,14 @@
 		"directory": "./dist",
 		"binding": "ASSETS"
 	},
+	// Vincula o KV de sessao que o adapter @astrojs/cloudflare passou a exigir
+	// (binding SESSION). Sem o id explicito, o wrangler tenta provisionar um
+	// namespace novo a cada deploy e falha com "already exists" (codigo 10014),
+	// porque ericolira-blog-session ja existe. Apontar o id existente faz o
+	// deploy reusar o namespace em vez de recriar.
+	"kv_namespaces": [
+		{ "binding": "SESSION", "id": "857c675df6244b50aaf6cedc44900579" }
+	],
 	"observability": {
 		"enabled": true
 	}
